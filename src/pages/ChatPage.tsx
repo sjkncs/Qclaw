@@ -7,6 +7,7 @@ import {
 } from './chat-availability-state'
 import { resolveChatSelectableModels } from './chat-model-options'
 import { createNextRequestId, shouldApplyRequestResult } from './chat-request-guards'
+import { readChatComposerEnterSendMode, type ChatComposerEnterSendMode } from '../lib/chat-composer-enter-send-preference'
 
 const INITIAL_AVAILABILITY_STATE: ChatPageAvailabilityState = {
   availabilityState: 'loading',
@@ -17,7 +18,7 @@ const INITIAL_AVAILABILITY_STATE: ChatPageAvailabilityState = {
   availabilityMessage: '正在读取聊天状态...',
 }
 
-export default function ChatPage() {
+export default function ChatPage({ enterSendMode: parentEnterSendMode }: { enterSendMode?: ChatComposerEnterSendMode }) {
   const navigate = useNavigate()
   const [chatAvailability, setChatAvailability] = useState<ChatPageAvailabilityState>(
     INITIAL_AVAILABILITY_STATE
@@ -25,6 +26,7 @@ export default function ChatPage() {
   const availabilityStateRef = useRef<ChatPageAvailabilityState>(INITIAL_AVAILABILITY_STATE)
   const latestAvailabilityRequestIdRef = useRef(0)
   const availabilityInFlightRef = useRef(false)
+  const enterSendMode = parentEnterSendMode ?? readChatComposerEnterSendMode()
 
   const loadAvailability = useCallback(async (): Promise<ChatPageAvailabilityState> => {
     const requestId = createNextRequestId(latestAvailabilityRequestIdRef.current)
@@ -104,6 +106,7 @@ export default function ChatPage() {
         availabilityMessage={availabilityMessage}
         onOpenSettings={() => navigate('/models')}
         onEnsureGatewayRunning={handleEnsureGateway}
+        enterSendMode={enterSendMode}
       />
     </div>
   )
