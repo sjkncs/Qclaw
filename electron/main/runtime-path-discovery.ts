@@ -199,9 +199,14 @@ function resolveOpenClawCommonBinDirs(platform: NodeJS.Platform, env: NodeJS.Pro
   }
 
   const homeDir = resolveEnvValue(env, 'HOME')
+  const snapBin = platform === 'linux' ? '/snap/bin' : ''
   return uniqueNonEmpty(
     [
+      homeDir ? joinBinPath(homeDir, '.config/Qclaw/bin', platform) : '',
+      homeDir ? joinBinPath(homeDir, '.local/share/qclaw', platform) : '',
+      homeDir ? joinBinPath(homeDir, '.local/bin', platform) : '',
       homeDir ? joinBinPath(homeDir, '.npm-global/bin', platform) : '',
+      snapBin,
       ...resolvePosixSharedBinDirs(platform, env),
     ],
     platform
